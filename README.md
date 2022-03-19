@@ -1,1 +1,1 @@
-# miner-gui
+# dashboardsy-miner
