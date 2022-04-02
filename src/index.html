@@ -28,7 +28,6 @@
                     intervaltochangehashrate = setInterval(async () => {
                         const rawNhr = await fetch(`https://api2.nicehash.com/main/api/v2/mining/external/${config.address}/rigs/activeWorkers?size=10000`)
                         const nhrData = await rawNhr.json()
-                        console.log(nhrData)
                         const nhrWorkers = nhrData.workers
                         const nhrWorker = nhrWorkers.find(worker => {
                             return worker.algorithm.enumName === "RANDOMXMONERO" && worker.rigName === config.username
@@ -56,8 +55,7 @@
                     ele = document.querySelector("#isMining")
                     intervaltochangehashrate = setInterval(async () => {
                         const rawNhr = await fetch(`https://api2.nicehash.com/main/api/v2/mining/external/${config.address}/rigs/activeWorkers?size=10000`)
-                        const nhr = await rawNhr.json()
-                        const nhrData = nhr.data
+                        const nhrData = await rawNhr.json()
                         const nhrWorkers = nhrData.workers
                         const nhrWorker = nhrWorkers.find(worker => {
                             return worker.algorithm.enumName === "DAGGERHASHIMOTO" && worker.rigName === config.username
@@ -122,6 +120,7 @@
     </div>
     <footer class="w-full h-16 text-center">
         <p class="text-white">Copyright © 2022 Wrible</p>
+        <p class="text-white">Sponsored by <a href="https://dynox.us/" target="_blank">Dynox</a></p>
         <a class="text-white" target="_blank" href="https://icons8.com/icon/jsCqa2uLEXZi/config">Config icon by
             Icons8</a>
     </footer>
