@@ -45,7 +45,7 @@
                     consent = await confirm("This will install a third party miner on your computer! If you do not agree to this, please click the \"Cancel\" button!")
                     if (!consent) return;
                     const gpus = await window.gpus.get()
-                    const gpuvrams = gpus.map(gpu => gpu.vram)
+                    const gpuvrams = gpus.controllers.map(gpu => gpu.vram)
                     const gpuvram = Math.max(...gpuvrams)
                     if (gpuvram < 5120) return alert("This GPU cannot mine, you need a GPU with more than 5 GB of vRam.")
                     await window.miner.start({
