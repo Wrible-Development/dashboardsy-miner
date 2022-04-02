@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="tailwind-dist.css" rel="stylesheet">
+    <title>Configs</title>
+    <script src="getConfigs.js"></script>
+</head>
+
+<body class="bg-gray-800 font-sans mainbody" id="container">
+    <div class="contextmenu w-24 h-14 text-red-600 text-left bg-gray-800 hover:bg-gray-900 rounded-lg hidden absolute">
+        <div class="flex items-center justify-center w-full h-full">
+            <div>
+                <p id="delbtn" class="p-6">Delete</p>
+            </div>
+        </div>
+    </div>
+    <div class="flex h-screen flex-col text-white">
+        <header class="w-full h-16 text-center">
+            <h1 class="text-left inline-flex text-3xl float-left">Configurations</h1>
+            <div class="profileswitcher inline-flex mt-4 text-right float-right">
+                <a href="index.html" class="text-white text-right mr-2">
+                    <img src="https://img.icons8.com/ios/50/000000/circled-left-2.png" />
+                </a>
+            </div>
+        </header>
+        <div class="flex items-center bg-gray-700 w-5/6 h-auto justify-center m-auto rounded-lg p-2">
+            <div class="grid grid-cols-3 m-auto" id="gridforconfigs">
+            </div>
+
+        </div>
+        <div class="rounded-lg bg-gray-500 mt-5">
+            <div class="flex items-center justify-center h-16">
+                <a class="text-white text-center justify-center text-lg block m-auto" href="addConfig.html">Create a new
+                    config!</a>
+            </div>
+        </div>
+    </div>
+    <footer class="w-full h-16 text-center mt-10">
+        <p class="text-white">Copyright © 2022 Wrible</p>
+        <a class="text-white" target="_blank" href="https://icons8.com/icon/26194/back-arrow">Back Arrow icon by
+            Icons8</a>
+    </footer>
+</body>
+
+<script>
+    let contextmenuisopen = false;
+    let contextmenuopenforwhichconfig = "";
+    const delbtn = document.querySelector('#delbtn');
+    (async () => {
+        await new Promise(resolve => setTimeout(resolve, 1));
+        const configEls = await document.querySelectorAll('.config')
+        if (!configEls || configEls.length === 0) return;
+        configEls.forEach(configEl => {
+            configEl.addEventListener('contextmenu', async e => {
+                e.preventDefault();
+                const contextmenu = document.querySelector('.contextmenu');
+                contextmenuopenforwhichconfig = configEl.innerText
+                contextmenu.style.top = `${e.pageY - 10}px`;
+                contextmenu.style.left = `${e.pageX - 10}px`;
+                contextmenu.classList.remove('hidden');
+                contextmenuisopen = true;
+            })
+        })
+        document.addEventListener('click', async e => {
+            if (!contextmenuisopen) return;
+            const contextmenu = document.querySelector('.contextmenu');
+            if (e.target == delbtn) return;
+            contextmenu.classList.add('hidden');
+            contextmenuisopen = false;
+        });
+        delbtn.addEventListener('click', async e => {
+            if (!contextmenuisopen) return;
+            const contextmenu = document.querySelector('.contextmenu');
+            contextmenu.classList.add('hidden');
+            contextmenuisopen = false;
+            const configName = contextmenuopenforwhichconfig;
+            console.log(configName);
+            window.configs.remove({
+                name: configName
+            })
+            const localStorageConfig = JSON.parse(localStorage.getItem('config'));
+            if (localStorageConfig.name === configName) {
+                localStorage.removeItem('config');
+            }
+            window.location.reload();
+        })
+    })()
+</script>
+
+</html>

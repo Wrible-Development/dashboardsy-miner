@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="tailwind-dist.css" rel="stylesheet">
+    <title>Add Config</title>
+    <script>
+        (async () => {
+            const numberofconfigs = await window.configs.get()
+            if (numberofconfigs.configs.length >= 6) {
+                alert("Oops! Seems like you have reached the config limit. You can only have 6 configs at a time.")
+                window.location.href = "index.html"
+            }
+        })()
+    </script>
+    <script>
+        async function addConfig() {
+            let configs = await window.configs.get()
+            const name = document.querySelector("#configName").value;
+            const address = document.querySelector("#configAddress").value;
+            const username = document.querySelector("#configUsername").value;
+            const isInvalid = name == '' || address == '' || username == '' || isNaN(username) || configs.configs.find(config => config.name == name)
+            if (isInvalid) {
+                alert("You seem to have missed one of the fields, a field is invalid or a config with this name already exists.");
+                return;
+            }
+            await window.configs.add({
+                address,
+                username,
+                name
+            })
+            return window.location.href = "index.html";
+        }
+    </script>
+</head>
+
+<body class="bg-gray-800 font-sans transition-all">
+    <div class="flex h-screen flex-col text-white">
+        <header class="w-full h-16 text-center">
+            <h1 class="text-left inline-flex text-3xl float-left">New Configuration</h1>
+            <div class="profileswitcher inline-flex mt-4 text-right float-right">
+                <a href="index.html" class="text-white text-right mr-2">
+                    <img src="https://img.icons8.com/ios/50/000000/circled-left-2.png" />
+                </a>
+            </div>
+        </header>
+        <div class="flex items-center bg-gray-700 w-5/6 h-auto justify-center m-auto rounded-lg p-2">
+            <form>
+                <input type="text" class="m-5 w-3/6 h-5 p-3 rounded-md bg-gray-600 text-white border-none"
+                    id="configName" placeholder="Config Name" name="configname">
+                <input type="text" class="m-5 w-3/6 h-5 p-3 rounded-md bg-gray-600 text-white border-none"
+                    id="configAddress" placeholder="Address" name="address">
+                <input type="text" class="m-5 w-3/6 h-5 p-3 rounded-md bg-gray-600 text-white border-none"
+                    id="configUsername" placeholder="Username" name="username">
+                <button class="m-5 w-1/6 h-10 rounded-md bg-green-800 border-none text-white float-right"
+                    onclick="addConfig()">Submit</button>
+            </form>
+        </div>
+        <footer class="w-full h-16 text-center">
+            <p class="text-white">Copyright © 2022 Wrible</p>
+            <a class="text-white" target="_blank" href="https://icons8.com/icon/26194/back-arrow">Back Arrow icon by
+                Icons8</a>
+        </footer>
+</body>
+
+</html>

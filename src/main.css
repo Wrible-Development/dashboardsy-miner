@@ -1,0 +1,7 @@
+@tailwind00 base;
+@tailwind components;
+@tailwind utilities;
+
+.config {
+    @apply p-3 m-10 flex h-32 w-32 bg-gray-600 rounded-lg text-center justify-center items-center text-2xl hover:cursor-pointer;
+}

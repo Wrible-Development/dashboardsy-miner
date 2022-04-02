@@ -1,0 +1,53 @@
+{
+  "name": "dashboardsy-miner",
+  "productName": "dashboardsy-miner",
+  "version": "1.0.0",
+  "description": "A GUI miner for dashboardsy",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder -mwl",
+    "lint": "echo \"No linting configured\"",
+    "dev": "NODE_ENV=development electron-forge start "
+  },
+  "keywords": [],
+  "author": {
+    "name": "Wrible-development"
+  },
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "electron-dl": "^3.3.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "systeminformation": "^5.11.9"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.63",
+    "@electron-forge/maker-deb": "^6.0.0-beta.63",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+    "@electron-forge/maker-zip": "^6.0.0-beta.63",
+    "electron": "17.1.2",
+    "electron-reloader": "^1.2.3",
+    "tailwindcss": "^3.0.23"
+  },
+  "build": {
+    "appId": "com.wrible.dashboardsy.miner",
+    "productName": "Dashboardsy Miner",
+    "icon": "src/assets/icon.png",
+    "linux": {
+      "target": "AppImage",
+      "icon": "src/assets/icon.png"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "src/assets/icon.png"
+    },
+    "mac": {
+      "target": "mas",
+      "icon": "src/assets/icon.png"
+    }
+  },
+  "postinstall": "electron-builder install-app-deps"
+}

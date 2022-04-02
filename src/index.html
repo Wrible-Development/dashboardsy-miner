@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="tailwind-dist.css" rel="stylesheet">
+    <title>Dashboardsy Miner</title>
+    <script>
+        let intervaltochangehashrate;
+        async function startMiner() {
+            const config = await JSON.parse((await localStorage.getItem('config')))
+            const startbtn = document.querySelector("#start")
+            const stopbtn = document.querySelector("#stop")
+            const cpuorgpu = await document.querySelector("#cpugpuopt")
+            let consent = false;
+            const cpugpu = cpuorgpu.value
+            switch (cpugpu) {
+                case "cpu":
+                    consent = await confirm("This will install a third party miner on your computer! If you do not agree to this, please click the \"Cancel\" button!")
+                    if (!consent) return;
+                    await window.miner.start({
+                        "type": "cpu",
+                        "config": config
+                    })
+                    let ele = document.querySelector("#isMining")
+                    intervaltochangehashrate = setInterval(async () => {
+                        const rawNhr = await fetch(`https://api2.nicehash.com/main/api/v2/mining/external/${config.address}/rigs/activeWorkers?size=10000`)
+                        const nhrData = await rawNhr.json()
+                        console.log(nhrData)
+                        const nhrWorkers = nhrData.workers
+                        const nhrWorker = nhrWorkers.find(worker => {
+                            return worker.algorithm.enumName === "RANDOMXMONERO" && worker.rigName === config.username
+                        })
+                        if (!nhrWorker) return;
+                        const nhrWorkerHashrate = new Number(nhrWorker.speedAccepted).toFixed(3);
+                        const nhrWorkerHashrateString = nhrWorkerHashrate.toString() + " kH/s"
+                        ele.innerText = "You are currently mining at " + nhrWorkerHashrateString
+                    }, 30000)
+                    ele.innerText = "Miner is starting!"
+                    stopbtn.classList.remove("hidden")
+                    startbtn.classList.add("hidden")
+                    break;
+                case "gpu":
+                    consent = await confirm("This will install a third party miner on your computer! If you do not agree to this, please click the \"Cancel\" button!")
+                    if (!consent) return;
+                    const gpus = await window.gpus.get()
+                    const gpuvrams = gpus.map(gpu => gpu.vram)
+                    const gpuvram = Math.max(...gpuvrams)
+                    if (gpuvram < 5120) return alert("This GPU cannot mine, you need a GPU with more than 5 GB of vRam.")
+                    await window.miner.start({
+                        "type": "gpu",
+                        "config": config
+                    })
+                    ele = document.querySelector("#isMining")
+                    intervaltochangehashrate = setInterval(async () => {
+                        const rawNhr = await fetch(`https://api2.nicehash.com/main/api/v2/mining/external/${config.address}/rigs/activeWorkers?size=10000`)
+                        const nhr = await rawNhr.json()
+                        const nhrData = nhr.data
+                        const nhrWorkers = nhrData.workers
+                        const nhrWorker = nhrWorkers.find(worker => {
+                            return worker.algorithm.enumName === "DAGGERHASHIMOTO" && worker.rigName === config.username
+                        })
+                        if (!nhrWorker) return;
+                        const nhrWorkerHashrate = new Number(nhrWorker.speedAccepted).toFixed(3);
+                        const nhrWorkerHashrateString = nhrWorkerHashrate.toString() + " MH/s"
+                        ele.innerText = "You are currently mining at " + nhrWorkerHashrateString
+                    }, 30000)
+                    ele.innerText = "Miner is starting!"
+                    stopbtn.classList.remove("hidden")
+                    startbtn.classList.add("hidden")
+                    break;
+                default:
+                    return alert("Please select GPU or CPU.")
+            }
+
+        }
+        async function stopMiner() {
+            if (intervaltochangehashrate) clearInterval(intervaltochangehashrate)
+            await window.miner.stop()
+            const ele = document.querySelector("#isMining")
+            ele.innerText = "You are currently not mining."
+            const startbtn = document.querySelector("#start")
+            startbtn.classList.remove("hidden")
+            const stopbtn = document.querySelector("#stop")
+            stopbtn.classList.add("hidden")
+        }
+    </script>
+</head>
+
+<body class="bg-gray-800 font-sans">
+    <div class="flex h-screen flex-col text-white">
+        <header class="w-full h-16 text-center">
+            <h1 class="text-left inline-flex text-3xl float-left">Dashboardsy Miner</h1>
+            <div class="profileswitcher inline-flex mt-2 text-right float-right">
+                <a href="configs.html" class="text-white text-right">
+                    <img
+                        src="https://img.icons8.com/external-others-zufarizal-robiyanto/64/000000/external-config-mutuline-technology-others-zufarizal-robiyanto.png" />
+                </a>
+            </div>
+        </header>
+        <div class="block text-center bg-gray-700 w-2/4 h-3/5 m-auto rounded-lg p-5">
+            <h3 class="block" id="currentconfig"></h3>
+            <select id="cpugpuopt"
+                class="float-left m-5 w-1/6 h-10 rounded-md bg-neutral-500 border-none text-white p-2 ">
+                <option value="cpu">CPU</option>
+                <option value="gpu" id="gpuopt">GPU</option>
+            </select>
+            <div>
+                <button
+                    class="text-semibold btn btn-primary float-right m-5 w-1/6 h-10 rounded-md bg-green-800 border-none text-white hover:cursor-pointer disabled:cursor-not-allowed "
+                    id="start" onclick="startMiner()">Start</button>
+                    <button
+                    class="hidden text-semibold btn btn-primary float-right m-5 w-1/6 h-10 rounded-md bg-red-800 border-none text-white hover:cursor-pointer disabled:cursor-not-allowed "
+                    id="stop" onclick="stopMiner()">Stop</button>
+            </div>
+            <div class="flex w-full">
+                <h1 id="isMining" class="text-white">You are currently not mining!</h1>
+            </div>
+        </div>
+    </div>
+    <footer class="w-full h-16 text-center">
+        <p class="text-white">Copyright © 2022 Wrible</p>
+        <a class="text-white" target="_blank" href="https://icons8.com/icon/jsCqa2uLEXZi/config">Config icon by
+            Icons8</a>
+    </footer>
+</body>
+
+<script>
+    (async () => {
+        const currentconfig = await localStorage.getItem('config');
+        const cc = await document.querySelector('#currentconfig')
+        const button = await document.querySelector('#start')
+        if (!currentconfig) {
+            button.disabled = true
+            cc.innerText = "No config selected.";
+            return
+        }
+        const config = await JSON.parse(currentconfig);
+        cc.innerText = "Current Config: " + config.name;
+        const os = await window.os.get();
+        if (os == 'darwin') {
+            const gpuopt = await document.querySelector('#gpuopt')
+            gpuopt.disabled = true
+        }
+    })()
+</script>
+
+</html>
