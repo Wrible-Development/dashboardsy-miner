@@ -14,6 +14,7 @@
             const stopbtn = document.querySelector("#stop")
             const cpuorgpu = await document.querySelector("#cpugpuopt")
             let consent = false;
+            let ele;
             const cpugpu = cpuorgpu.value
             switch (cpugpu) {
                 case "cpu":
@@ -23,7 +24,7 @@
                         "type": "cpu",
                         "config": config
                     })
-                    let ele = document.querySelector("#isMining")
+                    ele = document.querySelector("#isMining")
                     intervaltochangehashrate = setInterval(async () => {
                         const rawNhr = await fetch(`https://api2.nicehash.com/main/api/v2/mining/external/${config.address}/rigs/activeWorkers?size=10000`)
                         const nhrData = await rawNhr.json()
